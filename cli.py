@@ -14,8 +14,10 @@ class CLI:
         self.old_options = None
         self.length = 16
         self.old_length = None
-        self.description = None
-        self.login_info = None
+        self.description = 'not specified'
+        self.old_description = None
+        self.login_info = 'not specified'
+        self.old_login_info = None
         self.password_generator = None
         self.password = None
 
@@ -24,7 +26,12 @@ class CLI:
         self.screen.clear()
         self.screen.addstr(0, 0, 'please specify a password length >> ')
         self.screen.refresh()
-        self.length = int(self.screen.getstr(0, 36, 10))
+
+        try:
+            self.length = int(self.screen.getstr(0, 36, 10))
+        except ValueError:
+            self.error_scr('please enter an integer', self.set_length)
+
         self.set_password_options()
 
     # * Done
@@ -96,18 +103,70 @@ class CLI:
 
         self.set_password_options()
 
-    #! In progress
-    def set_info(self):
+    # * Done
+    def set_login_info(self):
         self.screen.clear()
-        message = [
-            '============ Set Information ============',
-            # TODO show info here if possible
-            '(n) set name',
-            '(d) set description',
-            '(s) save information and return to generation',
-            '(g) discard information and return to generation',
-            '(q) quit',
-        ]
+        self.screen.addstr(0, 0, 'please set login info >> ')
+        self.screen.refresh()
+        self.login_info = self.screen.getstr(0, 25, 100).decode('UTF-8')
+        self.set_info()
+
+    # * Done
+    def set_description(self):
+        self.screen.clear()
+        self.screen.addstr(0, 0, 'please set description >> ')
+        self.screen.refresh()
+        self.description = self.screen.getstr(0, 26, 100).decode('UTF-8')
+        self.set_info()
+
+    # * Done
+    def set_info(self):
+        if self.old_description is None and not self.description == 'not specified':
+            self.old_description = self.description
+        if self.old_login_info is None and not self.login_info == 'not specified':
+            self.old_login_info = self.login_info
+
+        self.screen.clear()
+        if not self.login_info and not self.description:
+            message = [
+                '============ Set Information ============',
+                '(i) set login info',
+                '(d) set description',
+                '(s) save information and return to generation',
+                '(g) discard information and return to generation',
+                '(q) quit',
+            ]
+        elif not self.login_info:
+            message = [
+                '============ Set Information ============',
+                f'Description >> {self.description}',
+                '(i) set login info',
+                '(d) set description',
+                '(s) save information and return to generation',
+                '(g) discard information and return to generation',
+                '(q) quit',
+            ]
+        elif not self.description:
+            message = [
+                '============ Set Information ============',
+                f'login info >> {self.login_info}',
+                '(i) set login info',
+                '(d) set description',
+                '(s) save information and return to generation',
+                '(g) discard information and return to generation',
+                '(q) quit',
+            ]
+        else:
+            message = [
+                '============ Set Information ============',
+                f'login info >> {self.login_info}',
+                f'description >> {self.description}',
+                '(i) set login info',
+                '(d) set description',
+                '(s) save information and return to generation',
+                '(g) discard information and return to generation',
+                '(q) quit',
+            ]
 
         for index, line in enumerate(message):
             self.screen.addstr(index, 0, line)
@@ -118,18 +177,21 @@ class CLI:
 
         if usr_inp == 'q':
             quit()
-        elif usr_inp == 'n':
-            #! set name
-            pass
+        elif usr_inp == 'i':
+            self.set_login_info()
         elif usr_inp == 'd':
-            #! set description
-            pass
+            self.set_description()
         elif usr_inp == 's':
-            #! save info and return generation
-            pass
+            self.old_description = None
+            self.old_login_info = None
+            self.generate_password_menu()
         elif usr_inp == 'g':
-            #! discard info and return generation
-            pass
+            self.login_info = self.old_login_info
+            self.old_login_info = None
+            self.description = self.old_description
+            self.old_description = None
+
+            self.generate_password_menu()
 
     #! In progress
     def save_current_password(self):
@@ -163,10 +225,11 @@ class CLI:
                 '============ Password Generation ============',
                 f'current options are >> {"".join(self.current_options)}',
                 f'password length >> {self.length}',
-                # TODO if there is a description make it appear in the message
+                f'login info >> {self.login_info}',
+                f'description >> {self.description}',
                 f'current password >> {self.password}',
                 '(o) set password generating options',
-                '(d) add description',
+                '(i) set information',
                 '(g) generate or regenerate password',
                 '(s) save current password',
                 '(c) copy current password',
@@ -178,10 +241,11 @@ class CLI:
                 '============ Password Generation ============',
                 f'current options are >> {"".join(self.current_options)}',
                 f'password length >> {self.length}',
-                # TODO if there is a description make it appear in the message
+                f'login info >> {self.login_info}',
+                f'description >> {self.description}',
                 f'current password >> {self.password}',
                 '(o) set password generating options',
-                '(d) add description',
+                '(i) set information',
                 '(g) generate or regenerate password',
                 '(s) save current password',
                 '(c) copy current password',
@@ -193,9 +257,10 @@ class CLI:
                 '============ Password Generation ============',
                 f'current options are >> {"".join(self.current_options)}',
                 f'password length >> {self.length}',
-                # TODO if there is a description make it appear in the message
+                f'login info >> {self.login_info}',
+                f'description >> {self.description}',
                 '(o) set password generating options',
-                '(d) add description',
+                '(i) set information',
                 '(g) generate or regenerate password',
                 '(s) save current password',
                 '(c) copy current password',
@@ -216,7 +281,7 @@ class CLI:
             self.generate_password_menu(gen=True)
         elif usr_inp == 'o':
             self.set_password_options()
-        elif usr_inp == 'd':
+        elif usr_inp == 'i':
             self.set_info()
         elif usr_inp == 's':
             self.save_current_password()
