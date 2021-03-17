@@ -28,6 +28,7 @@ class CLI:
         self.password_generator = None
         self.password = None
         self.page = 0
+        self.uuid = None
 
     # * Done
     def set_length(self):
@@ -209,13 +210,19 @@ class CLI:
 
         with open(join(PATH, 'passwords.pickle'), 'rb') as f:
             passwords = load(f)
-
-        passwords.append({
-            'uuid': uuid1().hex,
-            'login_info': self.login_info,
-            'description': self.description,
-            'password': self.password
-        })
+        if self.uuid:
+            for password in passwords:
+                if password['uuid'] == self.uuid:
+                    password['login_info'] = self.login_info
+                    password['description'] = self.description
+                    password['password'] = self.password
+        else:
+            passwords.append({
+                'uuid': uuid1().hex,
+                'login_info': self.login_info,
+                'description': self.description,
+                'password': self.password
+            })
 
         with open(join(PATH, 'passwords.pickle'), 'wb') as f:
             dump(passwords, f)
@@ -223,7 +230,7 @@ class CLI:
         self.generate_password_menu()
 
     # * Done
-    def copy_current_password(self):
+    def copy_current_password(self, f):
         copy(self.password)
         self.screen.clear()
         message = [
@@ -236,7 +243,7 @@ class CLI:
 
         sleep(1)
 
-        self.generate_password_menu()
+        f()
 
     # * Done
     def set_password(self):
@@ -321,7 +328,7 @@ class CLI:
         elif usr_inp == 's':
             self.save_current_password()
         elif usr_inp == 'c':
-            self.copy_current_password()
+            self.copy_current_password(self.generate_password_menu)
         elif usr_inp == 'm':
             self.main_menu()
         elif usr_inp == 'e':
@@ -436,14 +443,46 @@ class CLI:
                         self.login_info = v['login_info']
                         self.description = v['description']
                         self.password = v['password']
+                        self.uuid = v['uuid']
                         self.detailed_view()
         else:
             self.error_scr('there is no such option', self.view_menu)
 
-    #! In progress
+    # * Done
     def detailed_view(self):
         # TODO show current password with most detailed way possible
-        pass
+
+        message = [
+            '============ Detailed View ============',
+            f'login info >> {self.login_info}',
+            f'description >> {self.description}',
+            f'password >> {self.password}',
+            '(c) copy password',
+            '(e) edit password',
+            '(v) view menu',
+            '(m) main menu',
+            '(q) quit'
+        ]
+
+        for index, line in enumerate(message):
+            self.screen.addstr(index, 0, line)
+
+        self.screen.refresh()
+
+        usr_inp = self.screen.getkey().lower()
+
+        if usr_inp == 'q':
+            self.quit()
+        elif usr_inp == 'c':
+            self.copy_current_password(self.detailed_view)
+        elif usr_inp == 'e':
+            self.generate_password_menu()
+        elif usr_inp == 'v':
+            self.view_menu()
+        elif usr_inp == 'm':
+            self.main_menu()
+        else:
+            self.error_scr('there is no such option', self.detailed_view)
 
     def quit(self):
         self.screen.clear()
@@ -452,6 +491,7 @@ class CLI:
 
     # * Done
     def main_menu(self):
+        self.__init__()
         self.screen.clear()
         message = [
             '============ Main Menu ============',
