@@ -226,6 +226,16 @@ class CLI:
 
         with open(join(PATH, 'passwords.pickle'), 'wb') as f:
             dump(passwords, f)
+        self.screen.clear()
+        message = [
+            'Password saved'
+        ]
+        for index, line in enumerate(message):
+            self.screen.addstr(index, 0, line)
+
+        self.screen.refresh()
+
+        sleep(1)
 
         self.generate_password_menu()
 
@@ -347,6 +357,7 @@ class CLI:
 
     # ? Testing
     def view_menu(self):
+        #! second page not working
         self.screen.clear()
         if not exists(join(PATH, 'passwords.pickle')):
             self.error_scr(
@@ -359,7 +370,7 @@ class CLI:
 
         keys = []
         buttons = []
-        if len(passwords_to_show) <= 8:
+        if len(passwords_to_show) < 8 and self.page == 0:
             message = [
                 f'============ Page {self.page + 1} ============'
             ]
@@ -450,8 +461,7 @@ class CLI:
 
     # * Done
     def detailed_view(self):
-        # TODO show current password with most detailed way possible
-
+        self.screen.clear()
         message = [
             '============ Detailed View ============',
             f'login info >> {self.login_info}',
