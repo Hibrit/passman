@@ -1,6 +1,6 @@
 #!/bin/python3
 
-from curses import initscr
+from curses import initscr, endwin
 from os.path import exists, abspath, dirname, join
 from pickle import dump, load
 from sys import exit
@@ -27,6 +27,7 @@ class CLI:
         self.old_login_info = None
         self.password_generator = None
         self.password = None
+        self.page = 0
 
     # * Done
     def set_length(self):
@@ -71,7 +72,7 @@ class CLI:
         usr_inp = self.screen.getkey().lower()
 
         if usr_inp == 'q':
-            quit()
+            self.quit()
         elif usr_inp == 'g':
             self.current_options = self.old_options.copy()
             self.old_options = None
@@ -183,7 +184,7 @@ class CLI:
         usr_inp = self.screen.getkey().lower()
 
         if usr_inp == 'q':
-            quit()
+            self.quit()
         elif usr_inp == 'i':
             self.set_login_info()
         elif usr_inp == 'd':
@@ -219,8 +220,9 @@ class CLI:
         with open(join(PATH, 'passwords.pickle'), 'wb') as f:
             dump(passwords, f)
 
-    # * Done
+        self.generate_password_menu()
 
+    # * Done
     def copy_current_password(self):
         copy(self.password)
         self.screen.clear()
@@ -309,7 +311,7 @@ class CLI:
         usr_inp = self.screen.getkey().lower()
 
         if usr_inp == 'q':
-            quit()
+            self.quit()
         elif usr_inp == 'g':
             self.generate_password_menu(gen=True)
         elif usr_inp == 'o':
@@ -336,10 +338,117 @@ class CLI:
         sleep(1)
         f()
 
-    #! In progress
+    # ? Testing
     def view_menu(self):
-        # TODO construct a view menu for saved passwords
+        self.screen.clear()
+        if not exists(join(PATH, 'passwords.pickle')):
+            self.error_scr(
+                'you don\'t have any saved passwords', self.main_menu)
+
+        with open(join(PATH, 'passwords.pickle'), 'rb') as f:
+            passwords = load(f)
+
+        passwords_to_show = passwords[self.page * 8: self.page * 8 + 8]
+
+        keys = []
+        buttons = []
+        if len(passwords_to_show) <= 8:
+            message = [
+                f'============ Page {self.page + 1} ============'
+            ]
+            for index, p in enumerate(passwords_to_show):
+                keys.append({str(index): p})
+                description = p['description']
+                login_info = p['login_info']
+                message.append(f'({index}) {description} {login_info}')
+            message.append('(m) main menu')
+            message.append('(q) quit')
+
+        elif self.page == 0:
+            message = [
+                f'============ Page {self.page + 1} ============'
+            ]
+            for index, p in enumerate(passwords_to_show):
+                keys.append({str(index): p})
+                description = p['description']
+                login_info = p['login_info']
+                message.append(f'({index}) {description} {login_info}')
+            message.append('(n) next page')
+            buttons.append('n')
+            message.append('(m) main menu')
+            message.append('(q) quit')
+
+        elif not self.page == 0 and not len(passwords[(self.page + 1) * 8: (self.page + 1) * 8 + 8]) == 0:
+            message = [
+                f'============ Page {self.page + 1} ============'
+            ]
+            for index, p in enumerate(passwords_to_show):
+                keys.append({str(index): p})
+                description = p['description']
+                login_info = p['login_info']
+                message.append(f'({index}) {description} {login_info}')
+            message.append('(n) next page')
+            buttons.append('n')
+            message.append('(p) previous page')
+            buttons.append('p')
+            message.append('(m) main menu')
+            message.append('(q) quit')
+        else:
+            message = [
+                f'============ Page {self.page + 1} ============'
+            ]
+            for index, p in enumerate(passwords_to_show):
+                keys.append({str(index): p})
+                description = p['description']
+                login_info = p['login_info']
+                message.append(f'({index}) {description} {login_info}')
+            message.append('(p) previous page')
+            buttons.append('p')
+            message.append('(m) main menu')
+            message.append('(q) quit')
+
+        for index, line in enumerate(message):
+            self.screen.addstr(index, 0, line)
+
+        self.screen.refresh()
+
+        usr_inp = self.screen.getkey().lower()
+
+        valid_keys = []
+        for pair in keys:
+            for k, _ in pair.items():
+                valid_keys.append(k)
+
+        if usr_inp == 'q':
+            self.quit()
+        elif usr_inp == 'n' and 'n' in buttons:
+            self.page += 1
+            self.view_menu()
+        elif usr_inp == 'p' and 'p' in buttons:
+            self.page -= 1
+            self.view_menu()
+        elif usr_inp == 'm':
+            self.main_menu()
+        elif usr_inp in valid_keys:
+            for pair in keys:
+                for k, v in pair.items():
+                    if usr_inp == k:
+                        self.login_info = v['login_info']
+                        self.description = v['description']
+                        self.password = v['password']
+                        self.detailed_view()
+        else:
+            self.error_scr('there is no such option', self.view_menu)
+
+    #! In progress
+    def detailed_view(self):
+        # TODO show current password with most detailed way possible
         pass
+
+    def quit(self):
+        self.screen.clear()
+        endwin()
+        exit()
 
     # * Done
     def main_menu(self):
@@ -364,7 +473,7 @@ class CLI:
         elif usr_inp == 'v':
             self.view_menu()
         elif usr_inp == 'q':
-            exit()
+            self.quit()
         else:
             self.error_scr('there is no such option', self.main_menu)
 
