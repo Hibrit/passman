@@ -370,7 +370,7 @@ class CLI:
 
         keys = []
         buttons = []
-        if len(passwords_to_show) < 8 and self.page == 0:
+        if self.page == 0 and len(passwords[(self.page + 1) * 8: (self.page + 1) * 8 + 8]) == 0:
             message = [
                 f'============ Page {self.page + 1} ============'
             ]
@@ -459,6 +459,33 @@ class CLI:
         else:
             self.error_scr('there is no such option', self.view_menu)
 
+    #* Done
+    def delete_password(self):
+        with open(join(PATH, 'passwords.pickle'), 'rb') as f:
+            passwords = load(f)
+        
+        for index, password in enumerate(passwords):
+            if password['uuid'] == self.uuid:
+                passwords.pop(index)
+
+        with open(join(PATH, 'passwords.pickle'), 'wb') as f:
+            dump(passwords, f)
+        self.screen.clear()
+
+        message = [
+            'Password deleted'
+        ]
+
+        for index, line in enumerate(message):
+            self.screen.addstr(index, 0, line)
+
+        self.screen.refresh()
+
+        sleep(1)
+
+        self.__init__()
+        self.view_menu()
+
     # * Done
     def detailed_view(self):
         self.screen.clear()
@@ -469,6 +496,7 @@ class CLI:
             f'password >> {self.password}',
             '(c) copy password',
             '(e) edit password',
+            '(d) delete',
             '(v) view menu',
             '(m) main menu',
             '(q) quit'
@@ -487,6 +515,8 @@ class CLI:
             self.copy_current_password(self.detailed_view)
         elif usr_inp == 'e':
             self.generate_password_menu()
+        elif usr_inp == 'd':
+            self.delete_password()
         elif usr_inp == 'v':
             self.view_menu()
         elif usr_inp == 'm':
@@ -494,6 +524,7 @@ class CLI:
         else:
             self.error_scr('there is no such option', self.detailed_view)
 
+    # * Done
     def quit(self):
         self.screen.clear()
         endwin()
