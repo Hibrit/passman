@@ -1,10 +1,17 @@
 #!/bin/python3
 
 from curses import initscr
+from os.path import exists, abspath, dirname, join
+from pickle import dump, load
 from sys import exit
-from password_generator import PasswdGenerator
-from pyperclip import copy
 from time import sleep
+from uuid import uuid1
+
+from pyperclip import copy
+
+from password_generator import PasswdGenerator
+
+PATH = dirname(abspath(__file__))
 
 
 class CLI:
@@ -193,12 +200,27 @@ class CLI:
 
             self.generate_password_menu()
 
-    #! In progress
+    # * Done
     def save_current_password(self):
-        # TODO construct a function that will save the current password to a sqlite database
-        pass
+        if not exists(join(PATH, 'passwords.pickle')):
+            with open(join(PATH, 'passwords.pickle'), 'wb') as f:
+                dump([], f)
+
+        with open(join(PATH, 'passwords.pickle'), 'rb') as f:
+            passwords = load(f)
+
+        passwords.append({
+            'uuid': uuid1().hex,
+            'login_info': self.login_info,
+            'description': self.description,
+            'password': self.password
+        })
+
+        with open(join(PATH, 'passwords.pickle'), 'wb') as f:
+            dump(passwords, f)
 
     # * Done
+
     def copy_current_password(self):
         copy(self.password)
         self.screen.clear()
@@ -214,7 +236,15 @@ class CLI:
 
         self.generate_password_menu()
 
-    #! In progress
+    # * Done
+    def set_password(self):
+        self.screen.clear()
+        self.screen.addstr(0, 0, 'please set password >> ')
+        self.screen.refresh()
+        self.password = self.screen.getstr(0, 23, 100).decode('UTF-8')
+        self.generate_password_menu()
+
+    # * Done
     def generate_password_menu(self, gen=False):
         self.screen.clear()
         if gen:
@@ -233,6 +263,7 @@ class CLI:
                 '(g) generate or regenerate password',
                 '(s) save current password',
                 '(c) copy current password',
+                '(e) edit password manually',
                 '(m) main menu',
                 '(q) quit',
             ]
@@ -249,6 +280,7 @@ class CLI:
                 '(g) generate or regenerate password',
                 '(s) save current password',
                 '(c) copy current password',
+                '(e) edit password manually',
                 '(m) main menu',
                 '(q) quit',
             ]
@@ -264,6 +296,7 @@ class CLI:
                 '(g) generate or regenerate password',
                 '(s) save current password',
                 '(c) copy current password',
+                '(e) edit password manually',
                 '(m) main menu',
                 '(q) quit',
             ]
@@ -289,14 +322,19 @@ class CLI:
             self.copy_current_password()
         elif usr_inp == 'm':
             self.main_menu()
+        elif usr_inp == 'e':
+            self.set_password()
         else:
             self.error_scr('there is no such option',
                            self.generate_password_menu)
 
-    #! In progress
-    def error_scr(self, message, function):
-        # TODO construct an error screen which will be continued after if possible
-        pass
+    # * Done
+    def error_scr(self, message, f):
+        self.screen.clear()
+        self.screen.addstr(0, 0, f'{message}')
+        self.screen.refresh()
+        sleep(1)
+        f()
 
     #! In progress
     def main_menu(self):
