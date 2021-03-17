@@ -10,23 +10,26 @@ from uuid import uuid1
 from pyperclip import copy
 
 from password_generator import PasswdGenerator
+from passman_parser import get_arguments
 
 PATH = dirname(abspath(__file__))
 
 
-class CLI:
-    def __init__(self):
-        self.screen = initscr()
-        self.current_options = [i for i in 'ludp']
+class Passman:
+    def __init__(self, silence=False, options='ludp', length=16, description='not specified', login_info='not specified', password=None):
+        if not silence:
+            self.screen = initscr()
+        self.silence = silence
+        self.current_options = [i for i in options]
         self.old_options = None
-        self.length = 16
+        self.length = length
         self.old_length = None
-        self.description = 'not specified'
+        self.description = description
         self.old_description = None
-        self.login_info = 'not specified'
+        self.login_info = login_info
         self.old_login_info = None
         self.password_generator = None
-        self.password = None
+        self.password = password
         self.page = 0
         self.uuid = None
 
@@ -226,34 +229,36 @@ class CLI:
 
         with open(join(PATH, 'passwords.pickle'), 'wb') as f:
             dump(passwords, f)
-        self.screen.clear()
-        message = [
-            'Password saved'
-        ]
-        for index, line in enumerate(message):
-            self.screen.addstr(index, 0, line)
+        if not self.silence:
+            self.screen.clear()
+            message = [
+                'Password saved'
+            ]
+            for index, line in enumerate(message):
+                self.screen.addstr(index, 0, line)
 
-        self.screen.refresh()
+            self.screen.refresh()
 
-        sleep(1)
+            sleep(1)
 
-        self.generate_password_menu()
+            self.generate_password_menu()
 
     # * Done
-    def copy_current_password(self, f):
+    def copy_current_password(self, f=None):
         copy(self.password)
-        self.screen.clear()
-        message = [
-            'Password copied'
-        ]
-        for index, line in enumerate(message):
-            self.screen.addstr(index, 0, line)
+        if not self.silence:
+            self.screen.clear()
+            message = [
+                'Password copied'
+            ]
+            for index, line in enumerate(message):
+                self.screen.addstr(index, 0, line)
 
-        self.screen.refresh()
+            self.screen.refresh()
 
-        sleep(1)
+            sleep(1)
 
-        f()
+            f()
 
     # * Done
     def set_password(self):
@@ -263,13 +268,16 @@ class CLI:
         self.password = self.screen.getstr(0, 23, 100).decode('UTF-8')
         self.generate_password_menu()
 
+    def gen_rand_pass(self):
+        self.password_generator = PasswdGenerator(
+                options=''.join(self.current_options), length=self.length)
+        self.password = self.password_generator.generate()
+
     # * Done
     def generate_password_menu(self, gen=False):
         self.screen.clear()
         if gen:
-            self.password_generator = PasswdGenerator(
-                options=''.join(self.current_options), length=self.length)
-            self.password = self.password_generator.generate()
+            self.gen_rand_pass()
             message = [
                 '============ Password Generation ============',
                 f'current options are >> {"".join(self.current_options)}',
@@ -560,5 +568,24 @@ class CLI:
 
 
 if __name__ == '__main__':
-    c = CLI()
-    c.main_menu()
+    args = get_arguments()
+    if args.silence:
+        options = args.options
+        length = args.length
+        description = args.description
+        info = args.info
+        if args.password:
+            password = args.password
+            p = Passman(silence=True, description=description, login_info=info, password=password)
+            p.save_current_password()
+        else:
+            p = Passman(silence=True, options=options, length=length, description=description, login_info=info)
+            p.gen_rand_pass()
+            p.save_current_password()
+        if args.copy:
+            p.copy_current_password()
+            
+    else:
+        #* cli mode
+        p = Passman()
+        p.main_menu()
