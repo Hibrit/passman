@@ -337,6 +337,11 @@ class CLI:
         f()
 
     #! In progress
+    def view_menu(self):
+        # TODO construct a view menu for saved passwords
+        pass
+
+    # * Done
     def main_menu(self):
         self.screen.clear()
         message = [
@@ -357,8 +362,7 @@ class CLI:
         if usr_inp == 'g':
             self.generate_password_menu()
         elif usr_inp == 'v':
-            # TODO view passwords menu
-            pass
+            self.view_menu()
         elif usr_inp == 'q':
             exit()
         else:
