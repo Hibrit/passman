@@ -12,8 +12,9 @@ from pyperclip import copy
 from password_generator import PasswdGenerator
 from passman_parser import get_arguments
 
-PATH = dirname(abspath(__file__))
+# PATH = dirname(abspath(__file__))
 
+PATH = '/home/hibrit/.passman/'
 
 class Passman:
     def __init__(self, silence=False, options='ludp', length=16, description='not specified', login_info='not specified', password=None):
