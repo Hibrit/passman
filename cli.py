@@ -355,7 +355,7 @@ class CLI:
         sleep(1)
         f()
 
-    # ? Testing
+    # * Done
     def view_menu(self):
         #! second page not working
         self.screen.clear()
