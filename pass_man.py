@@ -297,6 +297,9 @@ class Passman:
 
         with open(join(PATH, 'data.tnd'), 'rb') as f:
             passwords = load(f)
+            if len(passwords) == 0:
+                self.error_scr(
+                    get_entry('dont_have_any_saved'), self.main_menu)
 
         passwords_to_show = passwords[self.page * 8: self.page * 8 + 8]
 
