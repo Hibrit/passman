@@ -11,6 +11,8 @@ from pyperclip import copy
 
 from password_generator import PasswdGenerator
 from passman_parser import get_arguments
+from menu_entries import get_entry
+
 
 PATH = dirname(abspath(__file__))
 
@@ -54,19 +56,9 @@ class Passman:
             self.old_length = self.length
 
         self.screen.clear()
-        message = [
-            '============ Set Options ============',
-            f'current options are >> {"".join(self.current_options)}',
-            f'password length >> {self.length}',
-            '(l) to toggle option lowercase',
-            '(u) to toggle option uppercase',
-            '(d) to toggle option digits',
-            '(p) to toggle option puctuation',
-            '(x) to set password length',
-            '(s) save current settings and return to generation',
-            '(g) discard current settings and return to generation',
-            '(q) quit',
-        ]
+
+        message = get_entry(
+            'set_options', ["".join(self.current_options), self.length]).copy()
 
         for index, line in enumerate(message):
             self.screen.addstr(index, 0, line)
@@ -139,46 +131,59 @@ class Passman:
             self.old_login_info = self.login_info
 
         self.screen.clear()
-        if not self.login_info and not self.description:
-            message = [
-                '============ Set Information ============',
-                '(i) set login info',
-                '(d) set description',
-                '(s) save information and return to generation',
-                '(g) discard information and return to generation',
-                '(q) quit',
-            ]
-        elif not self.login_info:
-            message = [
-                '============ Set Information ============',
-                f'Description >> {self.description}',
-                '(i) set login info',
-                '(d) set description',
-                '(s) save information and return to generation',
-                '(g) discard information and return to generation',
-                '(q) quit',
-            ]
-        elif not self.description:
-            message = [
-                '============ Set Information ============',
-                f'login info >> {self.login_info}',
-                '(i) set login info',
-                '(d) set description',
-                '(s) save information and return to generation',
-                '(g) discard information and return to generation',
-                '(q) quit',
-            ]
-        else:
-            message = [
-                '============ Set Information ============',
-                f'login info >> {self.login_info}',
-                f'description >> {self.description}',
-                '(i) set login info',
-                '(d) set description',
-                '(s) save information and return to generation',
-                '(g) discard information and return to generation',
-                '(q) quit',
-            ]
+        # if not self.login_info and not self.description:
+        #     message = [
+        #         '============ Set Information ============',
+        #         '(i) set login info',
+        #         '(d) set description',
+        #         '(s) save information and return to generation',
+        #         '(g) discard information and return to generation',
+        #         '(q) quit',
+        #     ]
+        # elif not self.login_info:
+        #     message = [
+        #         '============ Set Information ============',
+        #         f'Description >> {self.description}',
+        #         '(i) set login info',
+        #         '(d) set description',
+        #         '(s) save information and return to generation',
+        #         '(g) discard information and return to generation',
+        #         '(q) quit',
+        #     ]
+        # elif not self.description:
+        #     message = [
+        #         '============ Set Information ============',
+        #         f'login info >> {self.login_info}',
+        #         '(i) set login info',
+        #         '(d) set description',
+        #         '(s) save information and return to generation',
+        #         '(g) discard information and return to generation',
+        #         '(q) quit',
+        #     ]
+        # else:
+        #     message = [
+        #         '============ Set Information ============',
+        #         f'login info >> {self.login_info}',
+        #         f'description >> {self.description}',
+        #         '(i) set login info',
+        #         '(d) set description',
+        #         '(s) save information and return to generation',
+        #         '(g) discard information and return to generation',
+        #         '(q) quit',
+        #     ]
+        # message = [
+        #     '============ Set Information ============',
+        #     f'login info >> {self.login_info}',
+        #     f'description >> {self.description}',
+        #     '(i) set login info',
+        #     '(d) set description',
+        #     '(s) save information and return to generation',
+        #     '(g) discard information and return to generation',
+        #     '(q) quit',
+        # ]
+
+        message = get_entry('set_information', [
+                            self.login_info, self.description])
 
         for index, line in enumerate(message):
             self.screen.addstr(index, 0, line)
@@ -270,7 +275,7 @@ class Passman:
 
     def gen_rand_pass(self):
         self.password_generator = PasswdGenerator(
-                options=''.join(self.current_options), length=self.length)
+            options=''.join(self.current_options), length=self.length)
         self.password = self.password_generator.generate()
 
     # * Done
@@ -467,11 +472,11 @@ class Passman:
         else:
             self.error_scr('there is no such option', self.view_menu)
 
-    #* Done
+    # * Done
     def delete_password(self):
         with open(join(PATH, 'passwords.pickle'), 'rb') as f:
             passwords = load(f)
-        
+
         for index, password in enumerate(passwords):
             if password['uuid'] == self.uuid:
                 passwords.pop(index)
@@ -576,16 +581,18 @@ if __name__ == '__main__':
         info = args.info
         if args.password:
             password = args.password
-            p = Passman(silence=True, description=description, login_info=info, password=password)
+            p = Passman(silence=True, description=description,
+                        login_info=info, password=password)
             p.save_current_password()
         else:
-            p = Passman(silence=True, options=options, length=length, description=description, login_info=info)
+            p = Passman(silence=True, options=options, length=length,
+                        description=description, login_info=info)
             p.gen_rand_pass()
             p.save_current_password()
         if args.copy:
             p.copy_current_password()
-            
+
     else:
-        #* cli mode
+        # * cli mode
         p = Passman()
         p.main_menu()
