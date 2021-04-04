@@ -6,6 +6,7 @@ from pickle import dump, load
 from sys import exit
 from time import sleep
 from uuid import uuid1
+from base64 import b64decode, b64encode
 
 from pyperclip import copy
 
@@ -169,28 +170,32 @@ class Passman:
 
     # * Done
     def save_current_password(self):
-        if not exists(join(PATH, 'passwords.pickle')):
-            with open(join(PATH, 'passwords.pickle'), 'wb') as f:
+        if not exists(join(PATH, 'data.tnd')):
+            with open(join(PATH, 'data.tnd'), 'wb') as f:
                 dump([], f)
 
-        with open(join(PATH, 'passwords.pickle'), 'rb') as f:
+        with open(join(PATH, 'data.tnd'), 'rb') as f:
             passwords = load(f)
         if self.uuid:
             for password in passwords:
                 if password['uuid'] == self.uuid:
-                    password['login_info'] = self.login_info
-                    password['description'] = self.description
-                    password['password'] = self.password
+                    password['login_info'] = b64encode(
+                        self.login_info.encode('UTF-8'))
+                    password['description'] = b64encode(
+                        self.description.encode('UTF-8'))
+                    password['password'] = b64encode(
+                        self.password.encode('UTF-8'))
         else:
             passwords.append({
                 'uuid': uuid1().hex,
-                'login_info': self.login_info,
-                'description': self.description,
-                'password': self.password
+                'login_info': b64encode(self.login_info.encode('UTF-8')),
+                'description': b64encode(self.description.encode('UTF-8')),
+                'password': b64encode(self.password.encode('UTF-8'))
             })
 
-        with open(join(PATH, 'passwords.pickle'), 'wb') as f:
+        with open(join(PATH, 'data.tnd'), 'wb') as f:
             dump(passwords, f)
+
         if not self.silence:
             self.screen.clear()
             message = get_entry('password_saved')
@@ -228,6 +233,7 @@ class Passman:
             0, len(message), 100).decode('UTF-8')
         self.generate_password_menu()
 
+    # * Done
     def gen_rand_pass(self):
         self.password_generator = PasswdGenerator(
             options=''.join(self.current_options), length=self.length)
@@ -285,11 +291,11 @@ class Passman:
     # * Done
     def view_menu(self):
         self.screen.clear()
-        if not exists(join(PATH, 'passwords.pickle')):
+        if not exists(join(PATH, 'data.tnd')):
             self.error_scr(
                 get_entry('dont_have_any_saved'), self.main_menu)
 
-        with open(join(PATH, 'passwords.pickle'), 'rb') as f:
+        with open(join(PATH, 'data.tnd'), 'rb') as f:
             passwords = load(f)
 
         passwords_to_show = passwords[self.page * 8: self.page * 8 + 8]
@@ -301,8 +307,8 @@ class Passman:
         if self.page == 0 and len(passwords[(self.page + 1) * 8: (self.page + 1) * 8 + 8]) == 0:
             for index, p in enumerate(passwords_to_show):
                 keys.append({str(index): p})
-                description = p['description']
-                login_info = p['login_info']
+                description = b64decode(p['description']).decode('UTF-8')
+                login_info = b64decode(p['login_info']).decode('UTF-8')
                 message.append(f'({index}) {description} {login_info}')
             message.append(get_entry('main_menu_message'))
             message.append(get_entry('quit_message'))
@@ -310,8 +316,8 @@ class Passman:
         elif self.page == 0:
             for index, p in enumerate(passwords_to_show):
                 keys.append({str(index): p})
-                description = p['description']
-                login_info = p['login_info']
+                description = b64decode(p['description']).decode('UTF-8')
+                login_info = b64decode(p['login_info']).decode('UTF-8')
                 message.append(f'({index}) {description} {login_info}')
             message.append(get_entry('next_page_message'))
             buttons.append('n')
@@ -321,8 +327,8 @@ class Passman:
         elif not self.page == 0 and not len(passwords[(self.page + 1) * 8: (self.page + 1) * 8 + 8]) == 0:
             for index, p in enumerate(passwords_to_show):
                 keys.append({str(index): p})
-                description = p['description']
-                login_info = p['login_info']
+                description = b64decode(p['description']).decode('UTF-8')
+                login_info = b64decode(p['login_info']).decode('UTF-8')
                 message.append(f'({index}) {description} {login_info}')
             message.append(get_entry('next_page_message'))
             buttons.append('n')
@@ -333,8 +339,8 @@ class Passman:
         else:
             for index, p in enumerate(passwords_to_show):
                 keys.append({str(index): p})
-                description = p['description']
-                login_info = p['login_info']
+                description = b64decode(p['description']).decode('UTF-8')
+                login_info = b64decode(p['login_info']).decode('UTF-8')
                 message.append(f'({index}) {description} {login_info}')
             message.append(get_entry('previous_page_message'))
             buttons.append('p')
@@ -367,9 +373,12 @@ class Passman:
             for pair in keys:
                 for k, v in pair.items():
                     if usr_inp == k:
-                        self.login_info = v['login_info']
-                        self.description = v['description']
-                        self.password = v['password']
+                        self.login_info = b64decode(
+                            v['login_info']).decode('UTF-8')
+                        self.description = b64decode(
+                            v['description']).decode('UTF-8')
+                        self.password = b64decode(
+                            v['password']).decode('UTF-8')
                         self.uuid = v['uuid']
                         self.detailed_view()
         else:
@@ -377,14 +386,14 @@ class Passman:
 
     # * Done
     def delete_password(self):
-        with open(join(PATH, 'passwords.pickle'), 'rb') as f:
+        with open(join(PATH, 'data.tnd'), 'rb') as f:
             passwords = load(f)
 
         for index, password in enumerate(passwords):
             if password['uuid'] == self.uuid:
                 passwords.pop(index)
 
-        with open(join(PATH, 'passwords.pickle'), 'wb') as f:
+        with open(join(PATH, 'data.tnd'), 'wb') as f:
             dump(passwords, f)
         self.screen.clear()
 
