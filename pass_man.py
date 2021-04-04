@@ -131,56 +131,6 @@ class Passman:
             self.old_login_info = self.login_info
 
         self.screen.clear()
-        # if not self.login_info and not self.description:
-        #     message = [
-        #         '============ Set Information ============',
-        #         '(i) set login info',
-        #         '(d) set description',
-        #         '(s) save information and return to generation',
-        #         '(g) discard information and return to generation',
-        #         '(q) quit',
-        #     ]
-        # elif not self.login_info:
-        #     message = [
-        #         '============ Set Information ============',
-        #         f'Description >> {self.description}',
-        #         '(i) set login info',
-        #         '(d) set description',
-        #         '(s) save information and return to generation',
-        #         '(g) discard information and return to generation',
-        #         '(q) quit',
-        #     ]
-        # elif not self.description:
-        #     message = [
-        #         '============ Set Information ============',
-        #         f'login info >> {self.login_info}',
-        #         '(i) set login info',
-        #         '(d) set description',
-        #         '(s) save information and return to generation',
-        #         '(g) discard information and return to generation',
-        #         '(q) quit',
-        #     ]
-        # else:
-        #     message = [
-        #         '============ Set Information ============',
-        #         f'login info >> {self.login_info}',
-        #         f'description >> {self.description}',
-        #         '(i) set login info',
-        #         '(d) set description',
-        #         '(s) save information and return to generation',
-        #         '(g) discard information and return to generation',
-        #         '(q) quit',
-        #     ]
-        # message = [
-        #     '============ Set Information ============',
-        #     f'login info >> {self.login_info}',
-        #     f'description >> {self.description}',
-        #     '(i) set login info',
-        #     '(d) set description',
-        #     '(s) save information and return to generation',
-        #     '(g) discard information and return to generation',
-        #     '(q) quit',
-        # ]
 
         message = get_entry('set_information', [
                             self.login_info, self.description])
@@ -283,56 +233,15 @@ class Passman:
         self.screen.clear()
         if gen:
             self.gen_rand_pass()
-            message = [
-                '============ Password Generation ============',
-                f'current options are >> {"".join(self.current_options)}',
-                f'password length >> {self.length}',
-                f'login info >> {self.login_info}',
-                f'description >> {self.description}',
-                f'current password >> {self.password}',
-                '(o) set password generating options',
-                '(i) set information',
-                '(g) generate or regenerate password',
-                '(s) save current password',
-                '(c) copy current password',
-                '(e) edit password manually',
-                '(m) main menu',
-                '(q) quit',
-            ]
-        elif self.password:
-            message = [
-                '============ Password Generation ============',
-                f'current options are >> {"".join(self.current_options)}',
-                f'password length >> {self.length}',
-                f'login info >> {self.login_info}',
-                f'description >> {self.description}',
-                f'current password >> {self.password}',
-                '(o) set password generating options',
-                '(i) set information',
-                '(g) generate or regenerate password',
-                '(s) save current password',
-                '(c) copy current password',
-                '(e) edit password manually',
-                '(m) main menu',
-                '(q) quit',
-            ]
-        else:
-            message = [
-                '============ Password Generation ============',
-                f'current options are >> {"".join(self.current_options)}',
-                f'password length >> {self.length}',
-                f'login info >> {self.login_info}',
-                f'description >> {self.description}',
-                '(o) set password generating options',
-                '(i) set information',
-                '(g) generate or regenerate password',
-                '(s) save current password',
-                '(c) copy current password',
-                '(e) edit password manually',
-                '(m) main menu',
-                '(q) quit',
-            ]
 
+        if self.password:
+
+            message = get_entry('generate_password_menu_1', ["".join(
+                self.current_options), self.length, self.login_info, self.description, self.password])
+        else:
+
+            message = get_entry('generate_password_menu_2', ["".join(
+                self.current_options), self.length, self.login_info, self.description])
         for index, line in enumerate(message):
             self.screen.addstr(index, 0, line)
 
@@ -368,9 +277,8 @@ class Passman:
         sleep(1)
         f()
 
-    # * Done
+    #! serious language adaptation problems
     def view_menu(self):
-        #! second page not working
         self.screen.clear()
         if not exists(join(PATH, 'passwords.pickle')):
             self.error_scr(
@@ -502,18 +410,9 @@ class Passman:
     # * Done
     def detailed_view(self):
         self.screen.clear()
-        message = [
-            '============ Detailed View ============',
-            f'login info >> {self.login_info}',
-            f'description >> {self.description}',
-            f'password >> {self.password}',
-            '(c) copy password',
-            '(e) edit password',
-            '(d) delete',
-            '(v) view menu',
-            '(m) main menu',
-            '(q) quit'
-        ]
+
+        message = get_entry(
+            'detailed_view', [self.login_info, self.description, self.password])
 
         for index, line in enumerate(message):
             self.screen.addstr(index, 0, line)
@@ -547,13 +446,8 @@ class Passman:
     def main_menu(self):
         self.__init__()
         self.screen.clear()
-        message = [
-            '============ Main Menu ============',
-            'Hi I am your personal password manager',
-            '(g) generate a new password',
-            '(v) view saved passwords',
-            '(q) quit',
-        ]
+
+        message = get_entry('main_menu')
 
         for index, line in enumerate(message):
             self.screen.addstr(index, 0, line)
