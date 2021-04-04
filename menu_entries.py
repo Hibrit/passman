@@ -1,5 +1,7 @@
 from locale import getdefaultlocale
+from os.path import exists, abspath, dirname, join
 
+PATH = dirname(abspath(__file__))
 
 EN = {
     'set_options': [
@@ -191,12 +193,22 @@ def get_entry(entry, variables=None) -> list:
         Send variables in a list to this function
     """
 
-    #! make this toggleable for languages
-
-    if type(TR[entry]) == list:
-        message = TR[entry].copy()
+    if not exists(join(PATH, 'language.txt')):
+        with open(join(PATH, 'language.txt'), 'w') as f:
+            print('EN', file=f)
+            lang = EN
     else:
-        message = TR[entry]
+        with open(join(PATH, 'language.txt'), 'r') as f:
+            l = f.readline().strip()
+            if l == 'EN':
+                lang = EN
+            elif l == 'TR':
+                lang = TR
+
+    if type(lang[entry]) == list:
+        message = lang[entry].copy()
+    else:
+        message = lang[entry]
 
     if not variables is None:
         for index, line in enumerate(message):
