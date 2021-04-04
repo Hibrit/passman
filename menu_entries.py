@@ -75,7 +75,82 @@ EN = {
         '(v) view saved passwords',
         '(q) quit',
     ]
+}
 
+TR = {
+    'set_options': [
+        '============ Ayarları Düzenle ============',
+        'güncel ayarlar >> {}',
+        'şifre uzunluğu >> {}',
+        '(l) küçük harfi aç/kapa',
+        '(u) büyük harfi aç/kapa',
+        '(d) rakamları aç/kapa',
+        '(p) özel karakterleri aç/kapa',
+        '(x) şifre uzunluğu belirle',
+        '(s) güncel ayarları tut ve şifre oluşturma menüsüne dön',
+        '(g) güncel ayarları unut ve şifre oluşturma menüsüne dön',
+        '(q) çık',
+    ],
+    'set_information': [
+        '============ Bilgileri Gir ============',
+        'giriş bilgisi >> {}',
+        'açıklama >> {}',
+        '(i) giriş bilgisini ayarla',
+        '(d) açıklamayı ayarla',
+        '(s) güncel ayarları tut ve şifre oluşturma menüsüne dön',
+        '(g) güncel ayarları unut ve şifre oluşturma menüsüne dön',
+        '(q) çık',
+    ],
+    'generate_password_menu_1': [
+        '============ Şifre Oluşturma ============',
+        'güncel ayarlar >> {}',
+        'şifre uzunluğu >> {}',
+        'giriş bilgisi >> {}',
+        'açıklama >> {}',
+        'güncel şifre >> {}',
+        '(o) şifre oluşturma seçeneklerini ayarla',
+        '(i) bilgilerini gir',
+        '(g) şifre oluştur/yeniden oluştur',
+        '(s) güncel şifreyi kaydet',
+        '(c) güncel şifreyi kopyala',
+        '(e) şifreyi elle gir',
+        '(m) ana menü',
+        '(q) çık',
+    ],
+    'generate_password_menu_2': [
+        '============ Şifre Oluşturma ============',
+        'güncel ayarlar >> {}',
+        'şifre uzunluğu >> {}',
+        'giriş bilgisi >> {}',
+        'açıklama >> {}',
+        '(o) şifre oluşturma seçeneklerini ayarla',
+        '(i) bilgilerini gir',
+        '(g) şifre oluştur/yeniden oluştur',
+        '(s) güncel şifreyi kaydet',
+        '(c) güncel şifreyi kopyala',
+        '(e) şifreyi elle gir',
+        '(m) ana menü',
+        '(q) çık',
+    ],
+    'detailed_view': [
+        '============ Detaylı Görünüm ============',
+        'giriş bilgisi >> {}',
+        'açıklama >> {}',
+        'şifre >> {}',
+        '(c) şifreyi kopyala',
+        '(e) şifreyi düzenle',
+        '(d) şifreyi sil',
+        '(v) görünüm menüsü',
+        '(m) ana menü',
+        '(q) çık'
+    ],
+    'main_menu': [
+        '============ Ana Menü ============',
+        'Merhaba ben sizin kişisel şifre yöneticinizim',
+        '(g) yeni bir şifre oluştur',
+        '(v) kaydedilmiş şifreleri gör',
+        '(q) çık',
+    ]
 }
 
 
@@ -85,7 +160,7 @@ def get_entry(entry, variables=None) -> list:
     """
 
     #! make this toggleable for languages
-    message = EN[entry].copy()
+    message = TR[entry].copy()
 
     if not variables is None:
         for index, line in enumerate(message):
