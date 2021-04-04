@@ -166,7 +166,23 @@ TR = {
         '(g) yeni bir şifre oluştur',
         '(v) kaydedilmiş şifreleri gör',
         '(q) çık',
-    ]
+    ],
+    'password_saved': ['Şifre kaydedildi'],
+    'password_copied': ['Şifre kopyalandı'],
+    'password_deleted': ['Şifre silindi'],
+    'view_menu': ['============ Sayfa {} ============'],
+    'not_specified': 'belirtilmedi',
+    'specify_password_length': 'lütfen bir şifre uzunluğu belirleyin >> ',
+    'enter_integer': 'lütfen bir tam sayı girin',
+    'no_such_option': 'böyle bir seçenek bulunmamakta',
+    'set_login_info': 'lütfen giriş bilgisi belirleyin >> ',
+    'set_description': 'lütfen açıklama belirleyin >> ',
+    'set_password': 'lütfen bir şifre girin >> ',
+    'dont_have_any_saved': 'kaydedilmiş bir şifre bulunmamakta',
+    'main_menu_message': '(m) ana menü',
+    'quit_message': '(q) çık',
+    'next_page_message': '(n) sonraki sayfa',
+    'previous_page_message': '(p) önceki sayfa',
 }
 
 
@@ -177,10 +193,10 @@ def get_entry(entry, variables=None) -> list:
 
     #! make this toggleable for languages
 
-    if type(EN[entry]) == list:
-        message = EN[entry].copy()
+    if type(TR[entry]) == list:
+        message = TR[entry].copy()
     else:
-        message = EN[entry]
+        message = TR[entry]
 
     if not variables is None:
         for index, line in enumerate(message):
