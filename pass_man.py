@@ -18,7 +18,7 @@ PATH = dirname(abspath(__file__))
 
 
 class Passman:
-    def __init__(self, silence=False, options='ludp', length=16, description='not specified', login_info='not specified', password=None):
+    def __init__(self, silence=False, options='ludp', length=16, description=get_entry('not_specified'), login_info=get_entry('not_specified'), password=None):
         if not silence:
             self.screen = initscr()
         self.silence = silence
@@ -38,13 +38,14 @@ class Passman:
     # * Done
     def set_length(self):
         self.screen.clear()
-        self.screen.addstr(0, 0, 'please specify a password length >> ')
+        message = get_entry('specify_password_length')
+        self.screen.addstr(0, 0, message)
         self.screen.refresh()
 
         try:
-            self.length = int(self.screen.getstr(0, 36, 10))
+            self.length = int(self.screen.getstr(0, len(message), 10))
         except ValueError:
-            self.error_scr('please enter an integer', self.set_length)
+            self.error_scr(get_entry('enter_integer'), self.set_length)
 
         self.set_password_options()
 
@@ -102,7 +103,7 @@ class Passman:
             else:
                 self.current_options.remove('p')
         else:
-            self.error_scr('there is no such option',
+            self.error_scr(get_entry('no_such_option'),
                            self.set_password_options)
 
         self.set_password_options()
@@ -110,24 +111,28 @@ class Passman:
     # * Done
     def set_login_info(self):
         self.screen.clear()
-        self.screen.addstr(0, 0, 'please set login info >> ')
+        message = get_entry('set_login_info')
+        self.screen.addstr(0, 0, message)
         self.screen.refresh()
-        self.login_info = self.screen.getstr(0, 25, 100).decode('UTF-8')
+        self.login_info = self.screen.getstr(
+            0, len(message), 100).decode('UTF-8')
         self.set_info()
 
     # * Done
     def set_description(self):
         self.screen.clear()
-        self.screen.addstr(0, 0, 'please set description >> ')
+        message = get_entry('set_description')
+        self.screen.addstr(0, 0, message)
         self.screen.refresh()
-        self.description = self.screen.getstr(0, 26, 100).decode('UTF-8')
+        self.description = self.screen.getstr(
+            0, len(message), 100).decode('UTF-8')
         self.set_info()
 
     # * Done
     def set_info(self):
-        if self.old_description is None and not self.description == 'not specified':
+        if self.old_description is None and not self.description == get_entry('not_specified'):
             self.old_description = self.description
-        if self.old_login_info is None and not self.login_info == 'not specified':
+        if self.old_login_info is None and not self.login_info == get_entry('not_specified'):
             self.old_login_info = self.login_info
 
         self.screen.clear()
@@ -157,8 +162,10 @@ class Passman:
             self.old_login_info = None
             self.description = self.old_description
             self.old_description = None
-
             self.generate_password_menu()
+        else:
+            self.error_scr(get_entry('no_such_option'),
+                           self.set_info)
 
     # * Done
     def save_current_password(self):
@@ -186,9 +193,7 @@ class Passman:
             dump(passwords, f)
         if not self.silence:
             self.screen.clear()
-            message = [
-                'Password saved'
-            ]
+            message = get_entry('password_saved')
             for index, line in enumerate(message):
                 self.screen.addstr(index, 0, line)
 
@@ -203,9 +208,7 @@ class Passman:
         copy(self.password)
         if not self.silence:
             self.screen.clear()
-            message = [
-                'Password copied'
-            ]
+            message = get_entry('password_copied')
             for index, line in enumerate(message):
                 self.screen.addstr(index, 0, line)
 
@@ -218,9 +221,11 @@ class Passman:
     # * Done
     def set_password(self):
         self.screen.clear()
-        self.screen.addstr(0, 0, 'please set password >> ')
+        message = get_entry('set_password')
+        self.screen.addstr(0, 0, message)
         self.screen.refresh()
-        self.password = self.screen.getstr(0, 23, 100).decode('UTF-8')
+        self.password = self.screen.getstr(
+            0, len(message), 100).decode('UTF-8')
         self.generate_password_menu()
 
     def gen_rand_pass(self):
@@ -266,7 +271,7 @@ class Passman:
         elif usr_inp == 'e':
             self.set_password()
         else:
-            self.error_scr('there is no such option',
+            self.error_scr(get_entry('no_such_option'),
                            self.generate_password_menu)
 
     # * Done
@@ -277,12 +282,12 @@ class Passman:
         sleep(1)
         f()
 
-    #! serious language adaptation problems
+    # * Done
     def view_menu(self):
         self.screen.clear()
         if not exists(join(PATH, 'passwords.pickle')):
             self.error_scr(
-                'you don\'t have any saved passwords', self.main_menu)
+                get_entry('dont_have_any_saved'), self.main_menu)
 
         with open(join(PATH, 'passwords.pickle'), 'rb') as f:
             passwords = load(f)
@@ -291,60 +296,50 @@ class Passman:
 
         keys = []
         buttons = []
+        message = get_entry('view_menu', [self.page + 1])
+
         if self.page == 0 and len(passwords[(self.page + 1) * 8: (self.page + 1) * 8 + 8]) == 0:
-            message = [
-                f'============ Page {self.page + 1} ============'
-            ]
             for index, p in enumerate(passwords_to_show):
                 keys.append({str(index): p})
                 description = p['description']
                 login_info = p['login_info']
                 message.append(f'({index}) {description} {login_info}')
-            message.append('(m) main menu')
-            message.append('(q) quit')
+            message.append(get_entry('main_menu_message'))
+            message.append(get_entry('quit_message'))
 
         elif self.page == 0:
-            message = [
-                f'============ Page {self.page + 1} ============'
-            ]
             for index, p in enumerate(passwords_to_show):
                 keys.append({str(index): p})
                 description = p['description']
                 login_info = p['login_info']
                 message.append(f'({index}) {description} {login_info}')
-            message.append('(n) next page')
+            message.append(get_entry('next_page_message'))
             buttons.append('n')
-            message.append('(m) main menu')
-            message.append('(q) quit')
+            message.append(get_entry('main_menu_message'))
+            message.append(get_entry('quit_message'))
 
         elif not self.page == 0 and not len(passwords[(self.page + 1) * 8: (self.page + 1) * 8 + 8]) == 0:
-            message = [
-                f'============ Page {self.page + 1} ============'
-            ]
             for index, p in enumerate(passwords_to_show):
                 keys.append({str(index): p})
                 description = p['description']
                 login_info = p['login_info']
                 message.append(f'({index}) {description} {login_info}')
-            message.append('(n) next page')
+            message.append(get_entry('next_page_message'))
             buttons.append('n')
-            message.append('(p) previous page')
+            message.append(get_entry('previous_page_message'))
             buttons.append('p')
-            message.append('(m) main menu')
-            message.append('(q) quit')
+            message.append(get_entry('main_menu_message'))
+            message.append(get_entry('quit_message'))
         else:
-            message = [
-                f'============ Page {self.page + 1} ============'
-            ]
             for index, p in enumerate(passwords_to_show):
                 keys.append({str(index): p})
                 description = p['description']
                 login_info = p['login_info']
                 message.append(f'({index}) {description} {login_info}')
-            message.append('(p) previous page')
+            message.append(get_entry('previous_page_message'))
             buttons.append('p')
-            message.append('(m) main menu')
-            message.append('(q) quit')
+            message.append(get_entry('main_menu_message'))
+            message.append(get_entry('quit_message'))
 
         for index, line in enumerate(message):
             self.screen.addstr(index, 0, line)
@@ -378,7 +373,7 @@ class Passman:
                         self.uuid = v['uuid']
                         self.detailed_view()
         else:
-            self.error_scr('there is no such option', self.view_menu)
+            self.error_scr(get_entry('no_such_option'), self.view_menu)
 
     # * Done
     def delete_password(self):
@@ -393,9 +388,7 @@ class Passman:
             dump(passwords, f)
         self.screen.clear()
 
-        message = [
-            'Password deleted'
-        ]
+        message = get_entry('password_deleted')
 
         for index, line in enumerate(message):
             self.screen.addstr(index, 0, line)
@@ -434,7 +427,7 @@ class Passman:
         elif usr_inp == 'm':
             self.main_menu()
         else:
-            self.error_scr('there is no such option', self.detailed_view)
+            self.error_scr(get_entry('no_such_option'), self.detailed_view)
 
     # * Done
     def quit(self):
@@ -463,7 +456,7 @@ class Passman:
         elif usr_inp == 'q':
             self.quit()
         else:
-            self.error_scr('there is no such option', self.main_menu)
+            self.error_scr(get_entry('no_such_option'), self.main_menu)
 
 
 if __name__ == '__main__':

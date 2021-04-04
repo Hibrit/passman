@@ -74,7 +74,23 @@ EN = {
         '(g) generate a new password',
         '(v) view saved passwords',
         '(q) quit',
-    ]
+    ],
+    'password_saved': ['Password saved'],
+    'password_copied': ['Password copied'],
+    'password_deleted': ['Password deleted'],
+    'view_menu': ['============ Page {} ============'],
+    'not_specified': 'not specified',
+    'specify_password_length': 'please specify a password length >> ',
+    'enter_integer': 'please enter an integer',
+    'no_such_option': 'there is no such option',
+    'set_login_info': 'please set login info >> ',
+    'set_description': 'please set description >> ',
+    'set_password': 'please set password >> ',
+    'dont_have_any_saved': 'you don\'t have any saved passwords',
+    'main_menu_message': '(m) main menu',
+    'quit_message': '(q) quit',
+    'next_page_message': '(n) next page',
+    'previous_page_message': '(p) previous page',
 }
 
 TR = {
@@ -160,7 +176,11 @@ def get_entry(entry, variables=None) -> list:
     """
 
     #! make this toggleable for languages
-    message = TR[entry].copy()
+
+    if type(EN[entry]) == list:
+        message = EN[entry].copy()
+    else:
+        message = EN[entry]
 
     if not variables is None:
         for index, line in enumerate(message):
