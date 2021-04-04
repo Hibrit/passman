@@ -1,7 +1,9 @@
 from locale import getdefaultlocale
 from os.path import exists, abspath, dirname, join
 
-PATH = dirname(abspath(__file__))
+# PATH = dirname(abspath(__file__))
+
+PATH = '/home/hibrit/.passman/'
 
 EN = {
     'set_options': [
