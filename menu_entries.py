@@ -1,7 +1,6 @@
-from locale import getdefaultlocale
-from os.path import exists, abspath, dirname, join
-
-PATH = dirname(abspath(__file__))
+from os.path import join
+from pathlib import Path
+PATH = join(str(Path.home()), '.passman')
 
 EN = {
     'set_options': [
@@ -95,97 +94,97 @@ EN = {
     'previous_page_message': '(p) previous page',
 }
 
-TR = {
-    'set_options': [
-        '============ Ayarları Düzenle ============',
-        'güncel ayarlar >> {}',
-        'şifre uzunluğu >> {}',
-        '(l) küçük harfi aç/kapa',
-        '(u) büyük harfi aç/kapa',
-        '(d) rakamları aç/kapa',
-        '(p) özel karakterleri aç/kapa',
-        '(x) şifre uzunluğu belirle',
-        '(s) güncel ayarları tut ve şifre oluşturma menüsüne dön',
-        '(g) güncel ayarları unut ve şifre oluşturma menüsüne dön',
-        '(q) çık',
-    ],
-    'set_information': [
-        '============ Bilgileri Gir ============',
-        'giriş bilgisi >> {}',
-        'açıklama >> {}',
-        '(i) giriş bilgisini ayarla',
-        '(d) açıklamayı ayarla',
-        '(s) güncel ayarları tut ve şifre oluşturma menüsüne dön',
-        '(g) güncel ayarları unut ve şifre oluşturma menüsüne dön',
-        '(q) çık',
-    ],
-    'generate_password_menu_1': [
-        '============ Şifre Oluşturma ============',
-        'güncel ayarlar >> {}',
-        'şifre uzunluğu >> {}',
-        'giriş bilgisi >> {}',
-        'açıklama >> {}',
-        'güncel şifre >> {}',
-        '(o) şifre oluşturma seçeneklerini ayarla',
-        '(i) bilgilerini gir',
-        '(g) şifre oluştur/yeniden oluştur',
-        '(s) güncel şifreyi kaydet',
-        '(c) güncel şifreyi kopyala',
-        '(e) şifreyi elle gir',
-        '(m) ana menü',
-        '(q) çık',
-    ],
-    'generate_password_menu_2': [
-        '============ Şifre Oluşturma ============',
-        'güncel ayarlar >> {}',
-        'şifre uzunluğu >> {}',
-        'giriş bilgisi >> {}',
-        'açıklama >> {}',
-        '(o) şifre oluşturma seçeneklerini ayarla',
-        '(i) bilgilerini gir',
-        '(g) şifre oluştur/yeniden oluştur',
-        '(s) güncel şifreyi kaydet',
-        '(c) güncel şifreyi kopyala',
-        '(e) şifreyi elle gir',
-        '(m) ana menü',
-        '(q) çık',
-    ],
-    'detailed_view': [
-        '============ Detaylı Görünüm ============',
-        'giriş bilgisi >> {}',
-        'açıklama >> {}',
-        'şifre >> {}',
-        '(c) şifreyi kopyala',
-        '(e) şifreyi düzenle',
-        '(d) şifreyi sil',
-        '(v) görünüm menüsü',
-        '(m) ana menü',
-        '(q) çık'
-    ],
-    'main_menu': [
-        '============ Ana Menü ============',
-        'Merhaba ben sizin kişisel şifre yöneticinizim',
-        '(g) yeni bir şifre oluştur',
-        '(v) kaydedilmiş şifreleri gör',
-        '(q) çık',
-    ],
-    'password_saved': ['Şifre kaydedildi'],
-    'password_copied': ['Şifre kopyalandı'],
-    'password_deleted': ['Şifre silindi'],
-    'view_menu': ['============ Sayfa {} ============'],
-    'not_specified': 'belirtilmedi',
-    'specify_password_length': 'lütfen bir şifre uzunluğu belirleyin >> ',
-    'enter_integer': 'lütfen bir tam sayı girin',
-    'no_such_option': 'böyle bir seçenek bulunmamakta',
-    'set_login_info': 'lütfen giriş bilgisi belirleyin >> ',
-    'set_description': 'lütfen açıklama belirleyin >> ',
-    'set_password': 'lütfen bir şifre girin >> ',
-    'dont_have_any_saved': 'kaydedilmiş bir şifre bulunmamakta',
-    'main_menu_message': '(m) ana menü',
-    'quit_message': '(q) çık',
-    'next_page_message': '(n) sonraki sayfa',
-    'previous_page_message': '(p) önceki sayfa',
-}
+# TR = {
+#     'set_options': [
+#         '============ Ayarları Düzenle ============',
+#         'güncel ayarlar >> {}',
+#         'şifre uzunluğu >> {}',
+#         '(l) küçük harfi aç/kapa',
+#         '(u) büyük harfi aç/kapa',
+#         '(d) rakamları aç/kapa',
+#         '(p) özel karakterleri aç/kapa',
+#         '(x) şifre uzunluğu belirle',
+#         '(s) güncel ayarları tut ve şifre oluşturma menüsüne dön',
+#         '(g) güncel ayarları unut ve şifre oluşturma menüsüne dön',
+#         '(q) çık',
+#     ],
+#     'set_information': [
+#         '============ Bilgileri Gir ============',
+#         'giriş bilgisi >> {}',
+#         'açıklama >> {}',
+#         '(i) giriş bilgisini ayarla',
+#         '(d) açıklamayı ayarla',
+#         '(s) güncel ayarları tut ve şifre oluşturma menüsüne dön',
+#         '(g) güncel ayarları unut ve şifre oluşturma menüsüne dön',
+#         '(q) çık',
+#     ],
+#     'generate_password_menu_1': [
+#         '============ Şifre Oluşturma ============',
+#         'güncel ayarlar >> {}',
+#         'şifre uzunluğu >> {}',
+#         'giriş bilgisi >> {}',
+#         'açıklama >> {}',
+#         'güncel şifre >> {}',
+#         '(o) şifre oluşturma seçeneklerini ayarla',
+#         '(i) bilgilerini gir',
+#         '(g) şifre oluştur/yeniden oluştur',
+#         '(s) güncel şifreyi kaydet',
+#         '(c) güncel şifreyi kopyala',
+#         '(e) şifreyi elle gir',
+#         '(m) ana menü',
+#         '(q) çık',
+#     ],
+#     'generate_password_menu_2': [
+#         '============ Şifre Oluşturma ============',
+#         'güncel ayarlar >> {}',
+#         'şifre uzunluğu >> {}',
+#         'giriş bilgisi >> {}',
+#         'açıklama >> {}',
+#         '(o) şifre oluşturma seçeneklerini ayarla',
+#         '(i) bilgilerini gir',
+#         '(g) şifre oluştur/yeniden oluştur',
+#         '(s) güncel şifreyi kaydet',
+#         '(c) güncel şifreyi kopyala',
+#         '(e) şifreyi elle gir',
+#         '(m) ana menü',
+#         '(q) çık',
+#     ],
+#     'detailed_view': [
+#         '============ Detaylı Görünüm ============',
+#         'giriş bilgisi >> {}',
+#         'açıklama >> {}',
+#         'şifre >> {}',
+#         '(c) şifreyi kopyala',
+#         '(e) şifreyi düzenle',
+#         '(d) şifreyi sil',
+#         '(v) görünüm menüsü',
+#         '(m) ana menü',
+#         '(q) çık'
+#     ],
+#     'main_menu': [
+#         '============ Ana Menü ============',
+#         'Merhaba ben sizin kişisel şifre yöneticinizim',
+#         '(g) yeni bir şifre oluştur',
+#         '(v) kaydedilmiş şifreleri gör',
+#         '(q) çık',
+#     ],
+#     'password_saved': ['Şifre kaydedildi'],
+#     'password_copied': ['Şifre kopyalandı'],
+#     'password_deleted': ['Şifre silindi'],
+#     'view_menu': ['============ Sayfa {} ============'],
+#     'not_specified': 'belirtilmedi',
+#     'specify_password_length': 'lütfen bir şifre uzunluğu belirleyin >> ',
+#     'enter_integer': 'lütfen bir tam sayı girin',
+#     'no_such_option': 'böyle bir seçenek bulunmamakta',
+#     'set_login_info': 'lütfen giriş bilgisi belirleyin >> ',
+#     'set_description': 'lütfen açıklama belirleyin >> ',
+#     'set_password': 'lütfen bir şifre girin >> ',
+#     'dont_have_any_saved': 'kaydedilmiş bir şifre bulunmamakta',
+#     'main_menu_message': '(m) ana menü',
+#     'quit_message': '(q) çık',
+#     'next_page_message': '(n) sonraki sayfa',
+#     'previous_page_message': '(p) önceki sayfa',
+# }
 
 
 def get_entry(entry, variables=None) -> list:
@@ -193,17 +192,19 @@ def get_entry(entry, variables=None) -> list:
         Send variables in a list to this function
     """
 
-    if not exists(join(PATH, 'language.txt')):
-        with open(join(PATH, 'language.txt'), 'w') as f:
-            print('EN', file=f)
-            lang = EN
-    else:
-        with open(join(PATH, 'language.txt'), 'r') as f:
-            l = f.readline().strip()
-            if l == 'EN':
-                lang = EN
-            elif l == 'TR':
-                lang = TR
+    # if not exists(join(PATH, 'language.txt')):
+    #     with open(join(PATH, 'language.txt'), 'w') as f:
+    #         print('EN', file=f)
+    #         lang = EN
+    # else:
+    #     with open(join(PATH, 'language.txt'), 'r') as f:
+    #         l = f.readline().strip()
+    #         if l == 'EN':
+    #             lang = EN
+    #         elif l == 'TR':
+    #             lang = TR
+
+    lang = EN
 
     if type(lang[entry]) == list:
         message = lang[entry].copy()

@@ -1,7 +1,8 @@
 #!/bin/python3
 
 from curses import initscr, endwin
-from os.path import exists, abspath, dirname, join
+from os.path import exists, join
+from pathlib import Path
 from pickle import dump, load
 from sys import exit
 from time import sleep
@@ -15,7 +16,7 @@ from passman_parser import get_arguments
 from menu_entries import get_entry
 
 
-PATH = dirname(abspath(__file__))
+PATH = join(str(Path.home()), '.passman')
 
 
 class Passman:
